@@ -1,9 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    {
-      "id": "spelunkery:raw_lead_nugget",
-      "required": false
-    }
-  ]
-}

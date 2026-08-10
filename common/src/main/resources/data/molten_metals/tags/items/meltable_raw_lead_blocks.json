@@ -1,9 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    {
-      "id":"oreganized:raw_lead_block",
-      "required": false
-    }
-  ]
-}

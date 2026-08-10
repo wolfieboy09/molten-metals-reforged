@@ -1,9 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    {
-      "id": "etcetera:raw_bismuth_block",
-      "required": false
-    }
-  ]
-}
