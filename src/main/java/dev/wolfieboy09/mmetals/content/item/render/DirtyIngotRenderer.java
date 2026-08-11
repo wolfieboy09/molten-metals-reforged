@@ -50,12 +50,25 @@ public class DirtyIngotRenderer extends BlockEntityWithoutLevelRenderer {
         itemRenderer.render(ingot, displayContext, false, poseStack, buffer, light, overlay, ingotModel);
 
         final float amount = 0.01F;
-        poseStack.translate(-0.001F, 0.01F, amount);
-        itemRenderer.render(stack, displayContext, false, poseStack, buffer, light, overlay, overlayModel);
 
-        poseStack.translate(0.0F, 0.0F, -amount * 2);
-        itemRenderer.render(stack, displayContext, false, poseStack, buffer, light, overlay, overlayModel);
-        poseStack.translate(0,0,0);
+        switch (displayContext) {
+            case FIRST_PERSON_RIGHT_HAND -> {
+                poseStack.translate(-0.001F, 0.01F, amount);
+                itemRenderer.render(stack, displayContext, false, poseStack, buffer, light, overlay, overlayModel);
+            }
+            case FIRST_PERSON_LEFT_HAND -> {
+                poseStack.translate(0.001F, 0.01F, -amount);
+                itemRenderer.render(stack, displayContext, false, poseStack, buffer, light, overlay, overlayModel);
+            }
+            default -> {
+                poseStack.translate(-0.001F, 0.01F, amount);
+                itemRenderer.render(stack, displayContext, false, poseStack, buffer, light, overlay, overlayModel);
+
+                poseStack.translate(0.0F, 0.0F, -amount * 2);
+                itemRenderer.render(stack, displayContext, false, poseStack, buffer, light, overlay, overlayModel);
+            }
+        }
+
         poseStack.popPose();
     }
 }
