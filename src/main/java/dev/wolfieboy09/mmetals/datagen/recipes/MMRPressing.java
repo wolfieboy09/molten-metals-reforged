@@ -9,8 +9,8 @@ import net.minecraft.data.PackOutput;
 
 import java.util.concurrent.CompletableFuture;
 
-public class MMRApplication extends PressingRecipeGen {
-    public MMRApplication(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+public class MMRPressing extends PressingRecipeGen {
+    public MMRPressing(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         super(output, registries, MoltenMetals.MOD_ID);
     }
 
