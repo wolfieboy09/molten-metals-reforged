@@ -1,33 +1,61 @@
 package dev.wolfieboy09.mmetals.content.item.render;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import dev.wolfieboy09.mmetals.MoltenMetals;
 import dev.wolfieboy09.mmetals.api.components.DirtyIngotComponent;
 import dev.wolfieboy09.mmetals.registries.MMRDataComponents;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.geom.EntityModelSet;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 
 @ParametersAreNonnullByDefault
-public class DirtyIngotRenderer {
+public class DirtyIngotRenderer extends BlockEntityWithoutLevelRenderer {
+    public static final DirtyIngotRenderer INSTANCE = new DirtyIngotRenderer(
+            Minecraft.getInstance().getBlockEntityRenderDispatcher(),
+            Minecraft.getInstance().getEntityModels()
+    );
+
     public static final ModelResourceLocation OVERLAY_MODEL = ModelResourceLocation.standalone(MoltenMetals.byId("item/dirty_ingot_overlay"));
-    private static final ResourceLocation OVERLAY = MoltenMetals.byId("textures/item/dirty_ingot.png");
 
-    public static boolean render(GuiGraphics guiGraphics, Font font, ItemStack itemStack, int x, int y) {
-        DirtyIngotComponent data = itemStack.get(MMRDataComponents.DIRTY_INGOT.get());
+    public DirtyIngotRenderer(BlockEntityRenderDispatcher dispatcher, EntityModelSet modelSet) {
+        super(dispatcher, modelSet);
+    }
+
+    @Override
+    public void renderByItem(ItemStack stack, ItemDisplayContext displayContext,
+                             PoseStack poseStack, MultiBufferSource buffer,
+                             int light, int overlay) {
+        ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
+
+        DirtyIngotComponent data = stack.get(MMRDataComponents.DIRTY_INGOT.get());
         ItemStack ingot = data != null ? data.ingot() : ItemStack.EMPTY;
-        if (ingot.isEmpty()) return false;
+        if (ingot.isEmpty()) return;
 
-        guiGraphics.renderItem(ingot, x, y);
+        BakedModel ingotModel = itemRenderer.getModel(ingot, Minecraft.getInstance().level, null, 0);
+        BakedModel overlayModel = Minecraft.getInstance().getModelManager()
+                .getModel(OVERLAY_MODEL);
 
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(0.0F, 0.0F, 200.0F);
-        guiGraphics.blit(OVERLAY, x, y, 0.0F, 0.0F, 16, 16, 16, 16);
-        guiGraphics.pose().popPose();
+        poseStack.pushPose();
 
-        return true;
+        poseStack.translate(0.5F, 0.5F, 0.5F);
+        itemRenderer.render(ingot, displayContext, false, poseStack, buffer, light, overlay, ingotModel);
+
+        final float amount = 0.01F;
+        poseStack.translate(-0.001F, 0.01F, amount);
+        itemRenderer.render(stack, displayContext, false, poseStack, buffer, light, overlay, overlayModel);
+
+        poseStack.translate(0.0F, 0.0F, -amount * 2);
+        itemRenderer.render(stack, displayContext, false, poseStack, buffer, light, overlay, overlayModel);
+        poseStack.translate(0,0,0);
+        poseStack.popPose();
     }
 }
